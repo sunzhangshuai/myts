@@ -354,7 +354,7 @@ function buildName(firstName: string, lastName = "Smith") {
 #### 剩余参数
 
 - 作用：想同时操作多个参数，或入参个数未知
-- 实现：把所有参数收集到数组变量里
+- 使用：把所有参数收集到数组变量里
 
 ```ts
 function buildName(firstName: string, ...restOfName: string[]) {
@@ -364,5 +364,78 @@ function buildName(firstName: string, ...restOfName: string[]) {
 let employeeName = buildName("Joseph", "Samuel", "Lucas", "MacKinzie");
 ```
 
+## 泛型
 
+> 使用类型变量，使得返回值类型与传入参数的类型相同
 
+```ts
+function identity(arg: any): any {
+    return arg; // 不知道返回值类型
+}
+```
+
+- 泛型函数**声明**
+
+  - 给函数添加类型变量`T`
+  -  `T`帮助我们捕获用户传入的类型（比如：`number`）
+  - 使用了 `T`当做返回值类型
+
+  ```ts
+  // 声明函数使用类型变量
+  function identity<T>(arg: T): T { // T是类型变量
+      return arg;
+  }
+  
+  // 数组
+  function loggingIdentity<T>(arg: Array<T>): Array<T> {
+      console.log(arg.length);  // Array has a .length, so no more error
+      return arg;
+  }
+  ```
+
+- 泛型函数**调用**
+
+  - `<>`法
+
+    ```ts
+    let output = identity<string>("myString");  // 返回值类型为 'string'
+    
+    let x = loggingIdentity<number>([1, 2, 3, 4])
+    ```
+
+  - 利用了*类型推论* -- 即编译器会根据传入的参数自动地帮助我们确定T的类型
+
+    ```ts
+    let output = identity("myString");  // type of output will be 'string'
+
+- 泛型约束
+
+  > 操作某类型的一组值，并且我们知道这组值具有什么样的属性，访问某属性可能会报错
+
+  ```ts
+  function loggingIdentity<T>(arg: T): T {
+      console.log(arg.length);  // Error: T doesn't have .length 
+      // 编译器并不能证明每种类型都有`length`属性，所以就报错了。
+      return arg;
+  }
+  ```
+
+  > 使用接口和`extends`关键字来实现约束
+
+  ```ts
+  interface Lengthwise {
+      length: number;
+  }
+  
+  function loggingIdentity<T extends Lengthwise>(arg: T): T {
+      console.log(arg.length);  // Now we know it has a .length property, so no more error
+      return arg;
+  }
+  
+  // 这个泛型函数被定义了约束，因此它不再是适用于任意类型
+  loggingIdentity(3);  // Error, number 没有 .length 属性
+  
+  loggingIdentity({length: 10, value: 3}); // ok
+  ```
+
+  
