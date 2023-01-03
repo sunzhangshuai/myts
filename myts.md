@@ -438,4 +438,19 @@ function identity(arg: any): any {
   loggingIdentity({length: 10, value: 3}); // ok
   ```
 
+- 在泛型约束中使用类型参数
+
+  > 应用场景：
+  >
+  > 用属性名从对象里获取某属性；确保这个属性存在于对象 `obj`上，因此我们需要在这两个类型之间使用约束。
+
+  ```ts
+  function getProperty(obj: T, key: K) {
+      return obj[key];
+  }
   
+  let x = { a: 1, b: 2, c: 3, d: 4 };
+  
+  getProperty(x, "a"); // okay
+  getProperty(x, "m"); // error: obj里没有 .m 属性
+  ```
